@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Steering Gear Learning Suite — Rafael Sukirno, CE</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#041620;color:#e8eef5;line-height:1.55}
+
+/* NAVBAR */
+nav{position:sticky;top:0;z-index:999;background:rgba(4,22,32,.98);backdrop-filter:blur(12px);border-bottom:1px solid #163a4d;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.brand{font-weight:800;color:#00e0c6;font-size:14px;margin-right:6px}
+.brand small{color:#7fa4b8;font-weight:400;font-size:10px;display:block}
+.nav-group{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.nav-label{font-size:10px;color:#7fa4b8;text-transform:uppercase;letter-spacing:1px;margin-right:3px}
+.fbtn{background:#0a2532;border:1px solid #163a4d;color:#e8eef5;font-size:11px;padding:6px 11px;border-radius:6px;cursor:pointer;transition:.2s;font-weight:600;white-space:nowrap}
+.fbtn:hover{background:#163a4d}
+.fbtn.active{background:#00e0c6;color:#041620;border-color:#00e0c6}
+.fbtn.m{background:#2a1a08;border-color:#5a3515;color:#ffb367}
+.fbtn.m.active{background:#ff8c42;color:#041620;border-color:#ff8c42}
+.fbtn.e{background:#2a2808;border-color:#5a5515;color:#ffe680}
+.fbtn.e.active{background:#ffd60a;color:#041620;border-color:#ffd60a}
+.fbtn.c{background:#0a283a;border-color:#15607a;color:#7fd4f5}
+.fbtn.c.active{background:#00b4ff;color:#041620;border-color:#00b4ff}
+.gbtn{display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:6px;text-decoration:none;font-size:11px;font-weight:700;color:#fff;border:1px solid #163a4d;transition:.2s;white-space:nowrap}
+.gbtn:hover{transform:translateY(-1px);filter:brightness(1.2)}
+.gbtn.google{background:#1a3a5c}
+.gbtn.youtube{background:#7a1020}
+.gbtn.wiki{background:#3a3a3a}
+.gbtn.pin{background:#7a1540}
+.gbtn.solas{background:#0d4a3a}
+.gbtn.marpol{background:#1a5a1a}
+.gbtn.imo{background:#0d3a6a}
+.gbtn.class{background:#5a3a0d}
+
+.searchwrap{padding:10px 14px;background:#0a2532;border-bottom:1px solid #163a4d;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.searchwrap input{flex:1;min-width:220px;background:#041620;border:1px solid #163a4d;color:#e8eef5;padding:9px 13px;border-radius:7px;font-size:13px;outline:none}
+.searchwrap input:focus{border-color:#00e0c6}
+.searchwrap span{font-size:11px;color:#7fa4b8}
+
+header{padding:24px 18px;text-align:center;background:radial-gradient(circle at 20% 0%,rgba(0,224,198,.15),transparent 60%),radial-gradient(circle at 80% 0%,rgba(0,180,255,.12),transparent 60%);border-bottom:1px solid #163a4d}
+header h1{font-size:22px;background:linear-gradient(90deg,#00e0c6,#00b4ff,#7fd4f5);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px}
+header p{color:#7fa4b8;font-size:13px;max-width:900px;margin:0 auto}
+header .credit{margin-top:10px;font-size:12px;color:#00e0c6;border:1px dashed #163a4d;display:inline-block;padding:5px 12px;border-radius:20px}
+
+.overview{padding:20px 18px;max-width:1400px;margin:0 auto}
+.overview h2{font-size:17px;margin-bottom:12px;color:#00e0c6}
+.flow-diagram{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:16px}
+.flow-box{background:#0a2532;border:1px solid #163a4d;border-radius:12px;padding:16px;transition:.25s;cursor:pointer}
+.flow-box:hover{transform:translateY(-3px);border-color:#00e0c6}
+.flow-box.m{border-left:4px solid #ff8c42}
+.flow-box.e{border-left:4px solid #ffd60a}
+.flow-box.c{border-left:4px solid #00b4ff}
+.flow-box h3{font-size:15px;margin-bottom:6px}
+.flow-box .code{font-family:monospace;font-size:11px;letter-spacing:1px;margin-bottom:6px}
+.flow-box.m .code{color:#ff8c42}
+.flow-box.e .code{color:#ffd60a}
+.flow-box.c .code{color:#00b4ff}
+.flow-box p{font-size:12px;color:#7fa4b8;line-height:1.55}
+.integrasi{background:#0a2532;border:1px solid #163a4d;border-radius:12px;padding:16px}
+.integrasi .lbl{font-size:12px;color:#00e0c6;font-family:monospace;margin-bottom:8px}
+.integrasi .rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;font-size:12px}
+
+section{padding:22px 18px;border-top:1px solid #163a4d}
+section h2{font-size:19px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+section h2 .bar{width:5px;height:22px;border-radius:3px;display:inline-block}
+section.m h2 .bar{background:#ff8c42}
+section.e h2 .bar{background:#ffd60a}
+section.c h2 .bar{background:#00b4ff}
+section .desc{color:#7fa4b8;font-size:13px;margin-bottom:16px;max-width:950px}
+.sub{margin-top:18px}
+.sub h4{font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px dashed #163a4d}
+section.m .sub h4{color:#ff8c42}
+section.e .sub h4{color:#ffd60a}
+section.c .sub h4{color:#00b4ff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.item{background:#0a2532;border:1px solid #163a4d;border-radius:9px;padding:12px 14px;cursor:pointer;transition:.2s}
+.item:hover{background:#0f3446;transform:translateX(3px)}
+.item.m{border-left:3px solid #ff8c42}
+.item.e{border-left:3px solid #ffd60a}
+.item.c{border-left:3px solid #00b4ff}
+.item.m:hover{border-color:#ff8c42}
+.item.e:hover{border-color:#ffd60a}
+.item.c:hover{border-color:#00b4ff}
+.item .code{font-family:monospace;font-size:11px;letter-spacing:.5px}
+.item.m .code{color:#ffb367}
+.item.e .code{color:#ffe680}
+.item.c .code{color:#7fd4f5}
+.item .name{font-size:14px;font-weight:600;margin-top:3px}
+.item .tag{font-size:11px;color:#7fa4b8;margin-top:5px}
+
+/* WELCOME */
+.welcome-overlay{position:fixed;inset:0;background:rgba(2,10,15,.92);backdrop-filter:blur(8px);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;transition:opacity .3s}
+.welcome-overlay.hidden{opacity:0;pointer-events:none}
+.welcome{background:linear-gradient(145deg,#0a2532,#041620);border:1px solid #00e0c6;border-radius:16px;max-width:840px;width:100%;padding:28px;position:relative;box-shadow:0 20px 60px rgba(0,224,198,.15);animation:wpop .35s ease}
+@keyframes wpop{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.welcome .top-badge{display:inline-block;font-size:11px;padding:4px 12px;border-radius:20px;background:rgba(0,224,198,.15);color:#00e0c6;border:1px solid rgba(0,224,198,.4);font-weight:700;letter-spacing:1px;margin-bottom:14px}
+.welcome h2{font-size:24px;background:linear-gradient(90deg,#00e0c6,#00b4ff,#7fd4f5);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:8px}
+.welcome .subtitle{color:#7fa4b8;font-size:13px;margin-bottom:20px}
+.welcome .author{display:inline-block;font-size:12px;color:#00e0c6;border:1px dashed #163a4d;padding:5px 12px;border-radius:20px;margin-bottom:20px}
+.welcome .choose-title{font-size:13px;color:#7fa4b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;text-align:center}
+.welcome .module-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.wm-card{background:#041620;border:2px solid #163a4d;border-radius:12px;padding:16px;cursor:pointer;transition:.25s;text-align:left}
+.wm-card:hover{transform:translateY(-4px)}
+.wm-card.m{border-color:rgba(255,140,66,.4)}
+.wm-card.m:hover{border-color:#ff8c42;background:#231508;box-shadow:0 10px 30px rgba(255,140,66,.2)}
+.wm-card.e{border-color:rgba(255,214,10,.4)}
+.wm-card.e:hover{border-color:#ffd60a;background:#231d08;box-shadow:0 10px 30px rgba(255,214,10,.2)}
+.wm-card.c{border-color:rgba(0,180,255,.4)}
+.wm-card.c:hover{border-color:#00b4ff;background:#0a2030;box-shadow:0 10px 30px rgba(0,180,255,.2)}
+.wm-card .code{font-family:monospace;font-size:11px;letter-spacing:1px;margin-bottom:6px;font-weight:700}
+.wm-card.m .code{color:#ff8c42}
+.wm-card.e .code{color:#ffd60a}
+.wm-card.c .code{color:#00b4ff}
+.wm-card h3{font-size:15px;margin-bottom:6px}
+.wm-card p{font-size:12px;color:#7fa4b8;line-height:1.5}
+.wm-card .cnt{font-size:11px;color:#00e0c6;margin-top:8px;font-weight:600}
+.welcome .welcome-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;border-top:1px solid #163a4d;padding-top:18px}
+.wbtn{padding:10px 20px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid #163a4d;background:#0a2532;color:#e8eef5;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.wbtn:hover{transform:translateY(-2px);border-color:#00e0c6}
+.wbtn.primary{background:linear-gradient(135deg,#00e0c6,#00b8a4);color:#041620;border-color:#00e0c6}
+.wbtn.primary:hover{filter:brightness(1.1)}
+.wbtn.close-x{background:transparent;color:#7fa4b8;font-size:11px;padding:10px 14px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:flex-start;justify-content:center;padding:20px;z-index:2000;overflow-y:auto;backdrop-filter:blur(4px)}
+.modal-overlay.active{display:flex}
+.modal{background:#0a2532;border:1px solid #163a4d;border-radius:14px;max-width:780px;width:100%;padding:24px;position:relative;margin:20px auto;animation:pop .25s}
+@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.modal .close{position:absolute;top:12px;right:14px;background:transparent;border:none;color:#7fa4b8;font-size:22px;cursor:pointer}
+.modal .close:hover{color:#e74c3c}
+.modal .mcode{font-family:monospace;font-size:12px;letter-spacing:1px;color:#00e0c6}
+.modal h3{font-size:22px;margin:6px 0 10px}
+.badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:14px;font-weight:600}
+.badge.m{background:rgba(255,140,66,.18);color:#ffb367;border:1px solid rgba(255,140,66,.4)}
+.badge.e{background:rgba(255,214,10,.15);color:#ffe680;border:1px solid rgba(255,214,10,.4)}
+.badge.c{background:rgba(0,180,255,.18);color:#7fd4f5;border:1px solid rgba(0,180,255,.4)}
+.modal .flow{background:#041620;border:1px solid #163a4d;border-radius:8px;padding:12px;margin:12px 0;font-family:monospace;font-size:12px;color:#00e0c6;word-break:break-word;white-space:pre-wrap}
+.modal p{font-size:13px;color:#b8cfdb;margin-bottom:10px}
+.modal ul{margin:10px 0 14px 20px;font-size:13px}
+.modal li{margin-bottom:4px;color:#dbe9f2}
+.modal .lbl{font-size:12px;color:#7fa4b8;margin-top:12px;display:block}
+.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid #163a4d}
+.links a{display:flex;align-items:center;justify-content:center;gap:5px;padding:9px 8px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;color:#fff;background:#041620;border:1px solid #163a4d;transition:.2s;text-align:center}
+.links a:hover{transform:translateY(-2px);border-color:#00e0c6}
+.links a.g{background:#1a3a5c}.links a.y{background:#4a1220}
+.links a.w{background:#2a2a2a}.links a.p{background:#5a1030}
+.links a.s{background:#0d3a2e}.links a.i{background:#0d2a4a}
+.links a.cl{background:#3a2a0d}.links a.mr{background:#123a12}
+
+footer{text-align:center;padding:24px 18px;color:#7fa4b8;font-size:12px;border-top:1px solid #163a4d;margin-top:20px}
+footer b{color:#00e0c6}
+@media(max-width:600px){header h1{font-size:16px}.grid{grid-template-columns:1fr}.links{grid-template-columns:1fr 1fr}.welcome h2{font-size:18px}.welcome{padding:20px}}
+</style>
+</head>
+<body>
+
+<!-- WELCOME POPUP -->
+<div class="welcome-overlay" id="welcomeOverlay">
+  <div class="welcome">
+    <div class="top-badge">⚓ SELAMAT DATANG</div>
+    <h2>STEERING GEAR LEARNING SUITE</h2>
+    <p class="subtitle">Pembelajaran terpadu Steering Gear & seluruh komponen pendukungnya — dari 3 sisi: Mechanical · Electrical · Control & Actuating.</p>
+    <div class="author">Disusun oleh Rafael Sukirno, CE</div>
+    <div class="choose-title">▼ Pilih Modul Pembelajaran ▼</div>
+    <div class="module-grid">
+      <div class="wm-card m" onclick="goToModule('mech')">
+        <div class="code">Steering-Mech01</div>
+        <h3>MECHANICAL</h3>
+        <p>Body & Muscle — rudder, stock, hydraulic power unit, cylinder, tiller, emergency steering.</p>
+        <div class="cnt" id="wm1">...</div>
+      </div>
+      <div class="wm-card e" onclick="goToModule('elec')">
+        <div class="code">Steering-Elect01</div>
+        <h3>ELECTRICAL</h3>
+        <p>Energy & Blood — MSB feeder, steering MCC, motor pompa hidrolik, starter, proteksi.</p>
+        <div class="cnt" id="wm2">...</div>
+      </div>
+      <div class="wm-card c" onclick="goToModule('ctrl')">
+        <div class="code">Steering-Elcont01</div>
+        <h3>CONTROL / AUTOMATION</h3>
+        <p>Brain & Nervous — autopilot, FU/NFU, rudder feedback, PID, gyro interface, alarm.</p>
+        <div class="cnt" id="wm3">...</div>
+      </div>
+    </div>
+    <div class="welcome-actions">
+      <button class="wbtn primary" onclick="closeWelcome()">📚 Jelajahi Semua Modul</button>
+      <a class="wbtn" target="_blank" rel="noopener" href="https://www.google.com/search?q=marine+steering+gear+ship+operation">🔎 Cari Referensi Steering</a>
+      <button class="wbtn close-x" onclick="closeWelcome()">✕ Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="brand">⚓ STEERING GEAR LEARNING<small>Mech01 · Elect01 · Elcont01</small></div>
+  <div class="nav-group">
+    <span class="nav-label">Modul:</span>
+    <button class="fbtn active" data-filter="all">Semua</button>
+    <button class="fbtn m" data-filter="mech">Mech</button>
+    <button class="fbtn e" data-filter="elec">Elect</button>
+    <button class="fbtn c" data-filter="ctrl">Control</button>
+  </div>
+  <div class="nav-group" style="margin-left:auto">
+    <span class="nav-label">Googling:</span>
+    <a class="gbtn google" target="_blank" rel="noopener" href="https://www.google.com/search?q=marine+steering+gear+rudder+ship">🔎 Google</a>
+    <a class="gbtn youtube" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=marine+steering+gear+operation">▶ YouTube</a>
+    <a class="gbtn wiki" target="_blank" rel="noopener" href="https://en.wikipedia.org/w/index.php?search=ship+steering+gear">📖 Wiki</a>
+    <a class="gbtn pin" target="_blank" rel="noopener" href="https://www.pinterest.com/search/pins/?q=ship+steering+gear">📌 Pinterest</a>
+    <a class="gbtn solas" target="_blank" rel="noopener" href="https://www.google.com/search?q=SOLAS+steering+gear+regulation">⛑ SOLAS</a>
+    <a class="gbtn marpol" target="_blank" rel="noopener" href="https://www.google.com/search?q=MARPOL+steering+ship">🌊 MARPOL</a>
+    <a class="gbtn imo" target="_blank" rel="noopener" href="https://www.imo.org/en/search/results?q=steering+gear">🏛 IMO</a>
+    <a class="gbtn class" target="_blank" rel="noopener" href="https://www.google.com/search?q=classification+society+steering+gear+survey">📋 Class</a>
+  </div>
+</nav>
+
+<div class="searchwrap">
+  <input id="q" type="text" placeholder="🔍 Cari komponen Steering: rudder, autopilot, NFU, hydraulic...">
+  <span>Klik kartu untuk detail</span>
+</div>
+
+<header>
+  <h1>STEERING GEAR LEARNING SUITE</h1>
+  <p>Pembelajaran terpadu: <b style="color:#ff8c42">Steering-Mech01</b> · <b style="color:#ffd60a">Steering-Elect01</b> · <b style="color:#00b4ff">Steering-Elcont01</b> — Steering Gear & seluruh komponen pendukungnya.</p>
+  <div class="credit">Disusun oleh Rafael Sukirno, CE</div>
+</header>
+
+<div class="overview">
+  <h2>🔗 FILOSOFI: SATU STEERING GEAR, TIGA SISI</h2>
+  <div class="flow-diagram">
+    <div class="flow-box m" onclick="goToModule('mech')">
+      <div class="code">Steering-Mech01</div>
+      <h3>MECHANICAL — Body & Muscle</h3>
+      <p>Yang bekerja: rudder, rudder stock, hydraulic cylinder, tiller, hydraulic power unit, emergency steering.</p>
+    </div>
+    <div class="flow-box e" onclick="goToModule('elec')">
+      <div class="code">Steering-Elect01</div>
+      <h3>ELECTRICAL — Energy & Blood</h3>
+      <p>Yang memberi tenaga: MSB & emergency feeder, steering MCC, motor pompa hidrolik, starter, proteksi.</p>
+    </div>
+    <div class="flow-box c" onclick="goToModule('ctrl')">
+      <div class="code">Steering-Elcont01</div>
+      <h3>CONTROL — Brain & Nervous</h3>
+      <p>Yang memutuskan: autopilot, FU/NFU, gyro interface, rudder feedback, PID, alarm, interlock.</p>
+    </div>
+  </div>
+  <div class="integrasi">
+    <div class="lbl">INTEGRASI STEERING (contoh 3 sisi):</div>
+    <div class="rows">
+      <div><b style="color:#ff8c42">Mech:</b> Hydraulic pump, cylinder, tiller, rudder stock, rudder</div>
+      <div><b style="color:#ffd60a">Elect:</b> Motor 30kW × 2, steering MCC, Star-Delta starter, proteksi</div>
+      <div><b style="color:#00b4ff">Ctrl:</b> Autopilot → servo valve → rudder → feedback → PID</div>
+    </div>
+  </div>
+</div>
+
+<div id="content"></div>
+
+<footer>
+  <p><b>STEERING GEAR LEARNING SUITE — Mech01 + Elect01 + Elcont01</b></p>
+  <p>Pembelajaran terpadu Steering Gear & seluruh komponen pendukungnya</p>
+  <p style="margin-top:8px">Disusun oleh <b>Rafael Sukirno, CE</b> · Chief Engineer</p>
+</footer>
+
+<div class="modal-overlay" id="mo"><div class="modal" id="mc"></div></div>
+
+<script>
+const DATA = [
+// ═══ STEERING-MECH01 ═══
+{m:'mech',g:'A. Struktur Kemudi',c:'Steering-Mech01-01',n:'Rudder Blade',t:'Daun kemudi',
+ d:'Rudder blade adalah permukaan yang membelokkan aliran air di belakang propeller, menghasilkan gaya lateral untuk mengubah arah kapal.',
+ f:'Propeller Wash → Rudder Blade → Lateral Force → Ship Turn',
+ l:['Rudder plate','Rudder frame','Rudder horn','Leading edge','Trailing edge','Rudder pintle','Rudder sole piece']},
+{m:'mech',g:'A. Struktur Kemudi',c:'Steering-Mech01-02',n:'Rudder Stock',t:'Poros kemudi',
+ d:'Rudder stock adalah poros vertikal yang meneruskan torsi dari steering gear ke rudder blade. Dimensi disesuaikan dengan torsi kemudi.',
+ f:'Tiller → Rudder Stock → Rudder Blade (rotate)',
+ l:['Stock shaft','Coupling flange to tiller','Keyway','Bearing journal','Gland seal','Corrosion protection']},
+{m:'mech',g:'A. Struktur Kemudi',c:'Steering-Mech01-03',n:'Rudder Carrier Bearing',t:'Bantalan pembawa',
+ d:'Bantalan yang menopang berat rudder stock & rudder. Biasanya self-aligning roller bearing dengan pelumasan grease.',
+ f:'Rudder Weight → Carrier Bearing → Hull Structure',
+ l:['Roller bearing','Bearing housing','Grease nipple','Wear ring','Oil seal','Foundation bolt']},
+{m:'mech',g:'A. Struktur Kemudi',c:'Steering-Mech01-04',n:'Rudder Pintle',t:'Pin kemudi',
+ d:'Pin yang menghubungkan rudder blade ke rudder horn atau skeg. Menjadi pivot bawah rudder.',
+ f:'Rudder Blade → Pintle → Rudder Horn (bearing)',
+ l:['Pintle pin','Bush bearing','Liner','Locking nut','Grease passage']},
+{m:'mech',g:'A. Struktur Kemudi',c:'Steering-Mech01-05',n:'Rudder Trunk',t:'Tabung kemudi',
+ d:'Tabung yang menembus lambung kapal tempat rudder stock melewatinya. Diatas diberi seal dan bawah diberi watertight gland.',
+ f:'Rudder Stock → Trunk → Watertight Seal → Rudder Room',
+ l:['Trunk shell','Upper gland seal','Lower seal','Flange connection to hull']},
+{m:'mech',g:'A. Struktur Kemudi',c:'Steering-Mech01-06',n:'Rudder Horn & Skeg',t:'Penopang rudder',
+ d:'Struktur penopang bawah rudder. Rudder horn untuk spade rudder, skeg untuk full skeg rudder.',
+ f:'Hull → Skeg / Horn → Pintle Bearing → Rudder',
+ l:['Skeg plate','Rudder horn','Pintle bearing seat','Welding to hull']},
+
+{m:'mech',g:'B. Tipe Steering Gear',c:'Steering-Mech01-07',n:'Ram Type Steering Gear',t:'Tipe ram (silinder)',
+ d:'Steering gear dengan 2 atau 4 hydraulic ram yang mendorong tiller untuk memutar rudder stock. Umum di kapal besar.',
+ f:'Hydraulic Pressure → Ram → Tiller → Rudder Stock → Rudder',
+ l:['Hydraulic ram','Ram pin','Cylinder body','Tiller arm','Guide block','Gland seal']},
+{m:'mech',g:'B. Tipe Steering Gear',c:'Steering-Mech01-08',n:'Rotary Vane Type',t:'Tipe vane putar',
+ d:'Steering gear dengan rotor vane yang berputar dalam stator, langsung memutar rudder stock. Compact.',
+ f:'Hydraulic Oil → Vane Rotor → Rudder Stock (rotate)',
+ l:['Rotor vane','Stator housing','Vane seal','Distribution valve','Foundation ring']},
+{m:'mech',g:'B. Tipe Steering Gear',c:'Steering-Mech01-09',n:'Rapson Slide Type',t:'Tipe Rapson slide',
+ d:'Steering gear dengan mekanisme Rapson slide — mengubah gerak linear ram menjadi putaran rudder stock.',
+ f:'Ram Linear Motion → Rapson Slide → Rotary Motion',
+ l:['Ram','Rapson slide block','Guide bar','Tiller','Rudder stock']},
+{m:'mech',g:'B. Tipe Steering Gear',c:'Steering-Mech01-10',n:'Tiller Arm',t:'Lengan kemudi',
+ d:'Tiller adalah lengan yang memutar rudder stock. Menerima gaya dari ram atau rotary vane.',
+ f:'Ram/Vane → Tiller → Rudder Stock (torque)',
+ l:['Tiller arm','Stock keyway','Tiller pin','Locking plate']},
+{m:'mech',g:'B. Tipe Steering Gear',c:'Steering-Mech01-11',n:'Hydraulic Cylinder (Ram)',t:'Silinder hidrolik',
+ d:'Silinder hidrolik yang mendorong tiller. Bisa 2-ram atau 4-ram tergantung torsi kemudi.',
+ f:'HP Oil → Cylinder → Ram Rod → Tiller → Rudder',
+ l:['Cylinder barrel','Ram rod','Piston seal','End cap','Gland packing','Bleed valve']},
+{m:'mech',g:'B. Tipe Steering Gear',c:'Steering-Mech01-12',n:'Crosshead & Guide',t:'Penghubung Ram-Tiller',
+ d:'Crosshead menghubungkan ram dengan tiller melalui guide block untuk mengurangi gaya lateral pada ram.',
+ f:'Ram Rod → Crosshead → Guide Block → Tiller',
+ l:['Crosshead','Guide block','Guide rails','Lubrication','Wear plate']},
+
+{m:'mech',g:'C. Hydraulic Power Unit',c:'Steering-Mech01-13',n:'Hydraulic Pump (Main)',t:'Pompa hidrolik utama',
+ d:'Pompa hidrolik (axial piston variable displacement) yang mensupply oli tekanan tinggi ke sistem steering.',
+ f:'Oil Tank → Pump → Directional Valve → Cylinder',
+ l:['Axial piston pump','Variable displacement','Servo control','Relief valve','Pressure gauge']},
+{m:'mech',g:'C. Hydraulic Power Unit',c:'Steering-Mech01-14',n:'Hydraulic Pump (Standby)',t:'Pompa cadangan',
+ d:'Pompa hidrolik kedua yang otomatis aktif jika pompa utama gagal. Redundancy SOLAS.',
+ f:'Standby Pump → Directional Valve → Cylinder',
+ l:['Standby pump','Auto start relay','Isolation valve','Coupling']},
+{m:'mech',g:'C. Hydraulic Power Unit',c:'Steering-Mech01-15',n:'Hydraulic Oil Tank',t:'Tangki oli hidrolik',
+ d:'Tangki penyimpan oli hidrolik dengan sirkulasi, level gauge, temperature gauge, breather filter.',
+ f:'Tank → Pump → System → Return → Tank',
+ l:['Tank shell','Level gauge','Filler cap','Breather','Suction strainer','Return filter','Sight glass']},
+{m:'mech',g:'C. Hydraulic Power Unit',c:'Steering-Mech01-16',n:'Hydraulic Oil Cooler',t:'Pendingin oli',
+ d:'Cooler untuk menjaga suhu oli hidrolik stabil (max 60°C). Biasanya shell & tube water-cooled.',
+ f:'Hot Oil → Cooler → Cooled Oil → Tank',
+ l:['Tube bundle','Shell','Water inlet/outlet','Thermostatic valve','Bypass']},
+{m:'mech',g:'C. Hydraulic Power Unit',c:'Steering-Mech01-17',n:'Hydraulic Oil Filter',t:'Penyaring oli',
+ d:'Filter menyaring partikel dari oli hidrolik. Dilengkapi differential pressure gauge untuk monitoring.',
+ f:'Oil → Filter → Clean Oil → System',
+ l:['Filter element','Housing','DP gauge','Bypass valve','Magnet plug']},
+{m:'mech',g:'C. Hydraulic Power Unit',c:'Steering-Mech01-18',n:'Accumulator (Hydraulic)',t:'Akumulator',
+ d:'Akumulator gas-nitrogen yang menyimpan energi hidrolik untuk meredam pressure spike dan backup singkat.',
+ f:'Nitrogen Gas → Bladder → Oil Side → System Pressure',
+ l:['Bladder / piston','Gas valve','Oil port','Pressure gauge']},
+{m:'mech',g:'C. Hydraulic Power Unit',c:'Steering-Mech01-19',n:'Relief Valve',t:'Katup pengaman tekanan',
+ d:'Relief valve melindungi sistem dari overpressure. Setpoint di-set sedikit di atas tekanan kerja.',
+ f:'Pressure > Setpoint → Relief Opens → Oil Returns to Tank',
+ l:['Valve body','Spring','Setting screw','Inlet/Outlet port','Seal']},
+{m:'mech',g:'C. Hydraulic Power Unit',c:'Steering-Mech01-20',n:'Directional Control Valve',t:'Katup arah',
+ d:'Valve yang mengarahkan oli ke port kiri atau kanan cylinder sesuai perintah. Biasanya solenoid + pilot operated.',
+ f:'Command → Solenoid → Spool Shifts → Oil to Port A / B',
+ l:['Valve body','Spool','Solenoid','Spring centering','Pilot oil']},
+{m:'mech',g:'C. Hydraulic Power Unit',c:'Steering-Mech01-21',n:'Servo Valve / Proportional Valve',t:'Servo valve',
+ d:'Valve presisi tinggi yang mengatur aliran oli secara proporsional dengan signal 4-20mA dari control system.',
+ f:'Control Signal 4-20mA → Servo Valve → Oil Flow Proportional',
+ l:['Torque motor','Spool','Nozzle-flapper','Feedback spring','Filter']},
+{m:'mech',g:'C. Hydraulic Power Unit',c:'Steering-Mech01-22',n:'Isolation Valve',t:'Katup isolasi',
+ d:'Valve untuk mengisolasi satu power unit dari sistem saat maintenance tanpa menghentikan steering.',
+ f:'Power Unit → Isolation Valve → System (open/close)',
+ l:['Ball / gate valve','Handle','Lockout facility']},
+
+{m:'mech',g:'D. Emergency Steering',c:'Steering-Mech01-23',n:'Emergency Steering Pump',t:'Pompa darurat',
+ d:'Pompa hidrolik darurat (biasanya hand pump atau electric kecil) jika kedua power unit gagal.',
+ f:'Emergency Pump → Directional Valve → Cylinder',
+ l:['Hand pump','Emergency electric pump','Isolation valve','Quick coupling']},
+{m:'mech',g:'D. Emergency Steering',c:'Steering-Mech01-24',n:'Emergency Tiller',t:'Tiller darurat',
+ d:'Tiller darurat yang bisa dipasang langsung ke rudder stock untuk kemudi manual. SOLAS wajib.',
+ f:'Emergency Tiller → Rudder Stock → Manual Steering',
+ l:['Emergency tiller arm','Keyway','Hand wheel','Tackle arrangement','Storage bracket']},
+{m:'mech',g:'D. Emergency Steering',c:'Steering-Mech01-25',n:'Emergency Steering Compass',t:'Kompas darurat',
+ d:'Kompas di steering gear room untuk kemudi darurat saat tidak ada akses ke bridge.',
+ f:'Compass → Emergency Steering Operator',
+ l:['Magnetic compass','Deviation card','Mounting bracket','Illumination']},
+{m:'mech',g:'D. Emergency Steering',c:'Steering-Mech01-26',n:'Steering Gear Room Communication',t:'Komunikasi',
+ d:'Telepon / intercom antara steering gear room dan bridge untuk koordinasi kemudi darurat.',
+ f:'Bridge Operator ↔ Steering Gear Room Operator',
+ l:['Intercom handset','Ringing bell','Emergency telephone']},
+
+{m:'mech',g:'E. Accessories & Safety',c:'Steering-Mech01-27',n:'Rudder Angle Indicator (Mechanical)',t:'Indikator sudut mekanik',
+ d:'Indikator mekanik yang menunjukkan sudut rudder secara langsung di steering gear room.',
+ f:'Tiller Movement → Linkage → Pointer → Dial',
+ l:['Pointer','Dial scale','Linkage rod','Pivot']},
+{m:'mech',g:'E. Accessories & Safety',c:'Steering-Mech01-28',n:'Rudder Angle Limit Stop',t:'Limit mekanik',
+ d:'Stopper mekanik yang membatasi sudut rudder (biasanya 35° kiri/kanan) untuk mencegah kerusakan.',
+ f:'Rudder Rotation → Limit Stop → Prevent Over-travel',
+ l:['Mechanical stopper','Buffer block','Adjustment bolt']},
+{m:'mech',g:'E. Accessories & Safety',c:'Steering-Mech01-29',n:'Rudder Locking Device',t:'Pengunci rudder',
+ d:'Alat untuk mengunci rudder pada posisi tertentu saat maintenance steering gear.',
+ f:'Rudder Positioned → Locking Pin Inserted → Rudder Locked',
+ l:['Locking pin','Locking bracket','Safety pin']},
+{m:'mech',g:'E. Accessories & Safety',c:'Steering-Mech01-30',n:'Gland Seal (Rudder Stock)',t:'Seal poros',
+ d:'Seal di rudder trunk yang mencegah air laut masuk ke steering gear room.',
+ f:'Rudder Stock → Gland Seal → Prevent Water Ingress',
+ l:['Packing rings','Gland follower','Bolts','Lantern ring','Drain connection']},
+
+// ═══ STEERING-ELECT01 ═══
+{m:'elec',g:'A. Power Supply',c:'Steering-Elect01-01',n:'MSB Feeder to Steering',t:'Feeder utama',
+ d:'Feeder breaker dari Main Switchboard ke steering MCC. Dilindungi MCCB/ACB + overload + earth fault.',
+ f:'MSB Busbar → Feeder Breaker → Cable → Steering MCC',
+ l:['ACB / MCCB','Overload relay','Earth fault relay','Ammeter','Voltmeter','Power meter']},
+{m:'elec',g:'A. Power Supply',c:'Steering-Elect01-02',n:'Emergency Feeder to Steering',t:'Feeder darurat',
+ d:'Feeder dari Emergency Switchboard (SOLAS) yang menjamin supply steering saat blackout. Wajib ada.',
+ f:'Emergency Switchboard → Emergency Feeder → Steering MCC',
+ l:['Emergency ACB','Cable','Auto changeover','Priority load control','Emergency indication']},
+{m:'elec',g:'A. Power Supply',c:'Steering-Elect01-03',n:'Steering Motor Control Center (MCC)',t:'MCC steering',
+ d:'MCC khusus steering gear berisi starter motor pompa hidrolik utama & standby serta control relay.',
+ f:'MSB / ESB → Steering MCC → Individual Starter → Motor',
+ l:['MCC busbar','Individual starters','Control transformer','Local/Remote switch','Emergency stop','Running indication']},
+{m:'elec',g:'A. Power Supply',c:'Steering-Elect01-04',n:'Control Power Supply 110V DC',t:'Supply kontrol',
+ d:'Catu daya kontrol dari battery 110V DC untuk relay, solenoid valve, trip circuit.',
+ f:'Battery 110V DC → Distribution → Relay / Solenoid / Control',
+ l:['Battery bank','Charger','DC distribution','Fuse / MCB','Insulation monitor']},
+{m:'elec',g:'A. Power Supply',c:'Steering-Elect01-05',n:'UPS for Steering Control',t:'Backup supply',
+ d:'UPS menyediakan supply AC stabil untuk control unit, autopilot, dan kontrol kritis steering.',
+ f:'MSB / Emergency → UPS → Autopilot + Control Unit',
+ l:['Rectifier','Battery','Inverter','Static switch','Bypass']},
+
+{m:'elec',g:'B. Motor & Starter',c:'Steering-Elect01-06',n:'Hydraulic Pump Motor No.1',t:'Motor pompa utama',
+ d:'Motor induksi 30-45 kW, 440V 3-phase, Star-Delta starter. Motor utama steering.',
+ f:'MCC → Star-Delta → Motor 30kW → Pump 1',
+ l:['Motor induksi','Star-Delta starter','Thermal overload','Running contact','Vibration sensor']},
+{m:'elec',g:'B. Motor & Starter',c:'Steering-Elect01-07',n:'Hydraulic Pump Motor No.2',t:'Motor pompa standby',
+ d:'Motor kedua yang otomatis standby. Redundancy SOLAS — kedua unit independen.',
+ f:'MCC → Star-Delta → Motor 30kW → Pump 2',
+ l:['Motor induksi','Star-Delta starter','Overload relay','Auto start relay','Running feedback']},
+{m:'elec',g:'B. Motor & Starter',c:'Steering-Elect01-08',n:'Star-Delta Starter',t:'Starter Star-Delta',
+ d:'Starter utama untuk motor pompa steering (daya besar 30-45 kW). Mengurangi arus start.',
+ f:'Star (low current) → Timer → Delta (running)',
+ l:['Main contactor','Star contactor','Delta contactor','Timer','Overload relay','Interlock']},
+{m:'elec',g:'B. Motor & Starter',c:'Steering-Elect01-09',n:'Soft Starter',t:'Soft starter',
+ d:'Alternatif Star-Delta untuk start lembut motor steering. Mengurangi mechanical & electrical stress.',
+ f:'Thyristor Ramp → Motor → Bypass Contactor',
+ l:['Thyristor pair','Bypass contactor','Control board','Setting potensiometer']},
+{m:'elec',g:'B. Motor & Starter',c:'Steering-Elect01-10',n:'Emergency Steering Motor',t:'Motor darurat',
+ d:'Motor kecil untuk emergency steering pump. Bisa DOL starter, supply dari emergency board.',
+ f:'ESB → DOL Starter → Emergency Motor → Emergency Pump',
+ l:['Motor kecil','DOL starter','Emergency supply','Auto switch']},
+
+{m:'elec',g:'C. Burner... no wait, Actuator Electrical',c:'Steering-Elect01-11',n:'Servo Valve Solenoid',t:'Solenoid servo valve',
+ d:'Solenoid di servo valve yang mengontrol aliran oli ke cylinder berdasarkan signal 4-20mA.',
+ f:'Control Signal → Torque Motor → Servo Valve Spool → Oil Flow',
+ l:['Torque motor coil','Signal input 4-20mA','Feedback LVDT','Fail-safe spring']},
+{m:'elec',g:'C. Actuator Electrical',c:'Steering-Elect01-12',n:'Directional Valve Solenoid',t:'Solenoid directional',
+ d:'Solenoid pada directional valve yang mengarahkan oli ke port kiri/kanan cylinder.',
+ f:'PLC DO → Relay → Solenoid Left / Right → Spool Shift',
+ l:['Solenoid coil L/R','Valve body','Manual override','Feedback switch']},
+{m:'elec',g:'C. Actuator Electrical',c:'Steering-Elect01-13',n:'Variable Pump Control Servo',t:'Servo pompa variabel',
+ d:'Servo yang mengatur displacement pompa variabel sesuai kebutuhan flow steering.',
+ f:'Command 4-20mA → Servo Actuator → Pump Swashplate',
+ l:['Servo actuator','Swashplate control','Position feedback','Fail-safe']},
+
+{m:'elec',g:'D. Protection & Safety',c:'Steering-Elect01-14',n:'Motor Overload Protection',t:'Overload motor',
+ d:'Thermal/magnetic overload relay yang memproteksi motor dari overload. Trip jika arus > setting.',
+ f:'Overcurrent → Thermal Trip → Motor Off → Alarm',
+ l:['Thermal element','Magnetic element','Trip contact','Manual reset']},
+{m:'elec',g:'D. Protection & Safety',c:'Steering-Elect01-15',n:'Phase Failure Relay',t:'Relay fase',
+ d:'Relay yang mendeteksi kehilangan fase pada supply motor 3-phase. Trip jika ada fase hilang.',
+ f:'Phase Loss → Relay Detect → Trip Motor → Alarm',
+ l:['Phase monitoring relay','Voltage sensing','Trip contact']},
+{m:'elec',g:'D. Protection & Safety',c:'Steering-Elect01-16',n:'Earth Fault Protection',t:'Proteksi arus bocor',
+ d:'Deteksi arus bocor ke ground pada sistem supply steering. Alarm/trip sesuai setting.',
+ f:'Insulation Fault → Earth Fault Relay → Alarm / Trip',
+ l:['Earth fault relay','Core balance CT','Trip contact']},
+{m:'elec',g:'D. Protection & Safety',c:'Steering-Elect01-17',n:'Emergency Stop Circuit',t:'Rangkaian E-Stop',
+ d:'Rangkaian fail-safe NC. Tombol E-Stop memutus supply ke motor pump dan stop steering.',
+ f:'E-Stop Button → NC Circuit → Motor Stop',
+ l:['E-Stop push button (red)','NC contact','Trip relay','Indicator lamp','Reset button']},
+{m:'elec',g:'D. Protection & Safety',c:'Steering-Elect01-18',n:'Steering Power Failure Alarm',t:'Alarm power fail',
+ d:'Alarm yang aktif saat kehilangan supply ke steering gear. Wajib di bridge & ECR.',
+ f:'Power Loss → Alarm → Bridge + ECR Buzzer',
+ l:['Voltage sensing relay','Alarm output','Buzzer','Indicator lamp']},
+
+{m:'elec',g:'E. Monitoring Electrical',c:'Steering-Elect01-19',n:'Motor Running Indicator',t:'Indikator running',
+ d:'Lampu/indikator yang menunjukkan motor pompa steering sedang running. Di steering room & bridge.',
+ f:'Motor Running Contact → Indicator Lamp',
+ l:['Running contact','Indicator lamp','Remote indicator']},
+{m:'elec',g:'E. Monitoring Electrical',c:'Steering-Elect01-20',n:'Motor Current Meter',t:'Ampere meter',
+ d:'Ammeter yang menunjukkan arus motor pump steering. Deteksi overload atau beban tidak normal.',
+ f:'CT → Ammeter → Display Current',
+ l:['Current transformer','Ammeter','Analog / digital display']},
+{m:'elec',g:'E. Monitoring Electrical',c:'Steering-Elect01-21',n:'Motor Running Hour Meter',t:'Hour meter',
+ d:'Mencatat running hours motor pump steering untuk keperluan maintenance schedule.',
+ f:'Running Signal → Hour Meter → Display Running Hours',
+ l:['Hour meter','Counter','Reset facility']},
+
+// ═══ STEERING-ELCONT01 ═══
+{m:'ctrl',g:'A. Sensors / Instruments',c:'Steering-Elcont01-01',n:'Rudder Angle Transmitter',t:'Transmitter sudut',
+ d:'Transmitter (synchro/potentiometer/encoder) yang mengukur sudut rudder. Signal ke control panel & repeater.',
+ f:'Rudder Angle → Transmitter → Signal → Control Panel + Repeaters',
+ l:['Synchro transmitter','Potentiometer / encoder','Gear linkage','Calibration']},
+{m:'ctrl',g:'A. Sensors / Instruments',c:'Steering-Elcont01-02',n:'Rudder Angle Indicator (Bridge)',t:'Indikator bridge',
+ d:'Repeater di bridge yang menunjukkan sudut rudder secara real-time. Wajib ada di bridge.',
+ f:'Transmitter → Signal → Bridge Repeater → Display',
+ l:['Synchro receiver','Dial','Digital display','Illumination']},
+{m:'ctrl',g:'A. Sensors / Instruments',c:'Steering-Elcont01-03',n:'Rudder Angle Indicator (ECR)',t:'Indikator ECR',
+ d:'Repeater di ECR yang menunjukkan sudut rudder untuk monitoring engineer.',
+ f:'Transmitter → Signal → ECR Repeater → Display',
+ l:['Synchro receiver','Dial','Digital display']},
+{m:'ctrl',g:'A. Sensors / Instruments',c:'Steering-Elcont01-04',n:'Hydraulic Pressure Transmitter',t:'Transmitter tekanan',
+ d:'Transmitter 4-20mA yang mengukur tekanan oli hidrolik sistem steering.',
+ f:'Hydraulic Pressure → Sensor → 4-20mA → PLC / Panel',
+ l:['Pressure sensor','Transmitter','Process connection']},
+{m:'ctrl',g:'A. Sensors / Instruments',c:'Steering-Elcont01-05',n:'Hydraulic Oil Temp RTD',t:'Sensor suhu oli',
+ d:'RTD Pt100 untuk mengukur suhu oli hidrolik. Signal untuk monitoring & alarm suhu tinggi.',
+ f:'Oil Temp → RTD → Signal → PLC → Alarm',
+ l:['Pt100 element','Thermowell','Transmitter 4-20mA']},
+{m:'ctrl',g:'A. Sensors / Instruments',c:'Steering-Elcont01-06',n:'Oil Level Switch',t:'Switch level oli',
+ d:'Switch yang mendeteksi level oli rendah di tangki hidrolik. Alarm/trip jika level rendah.',
+ f:'Oil Level Low → Switch → Signal → Alarm / Interlock',
+ l:['Float switch','Level probe','Trip contact']},
+{m:'ctrl',g:'A. Sensors / Instruments',c:'Steering-Elcont01-07',n:'Filter Differential Pressure Switch',t:'Switch DP filter',
+ d:'Switch yang mendeteksi filter oli tersumbat (DP tinggi). Alarm untuk maintenance.',
+ f:'Filter DP High → Switch → Alarm',
+ l:['DP switch','Setting screw','Alarm output']},
+{m:'ctrl',g:'A. Sensors / Instruments',c:'Steering-Elcont01-08',n:'Gyrocompass Interface Signal',t:'Signal gyro',
+ d:'Signal heading dari gyrocompass ke autopilot steering untuk mode auto. Signal NMEA/synchro/step.',
+ f:'Gyrocompass → Heading Signal → Autopilot',
+ l:['Gyro repeater interface','Signal converter','NMEA / synchro / step']},
+{m:'ctrl',g:'A. Sensors / Instruments',c:'Steering-Elcont01-09',n:'Rudder Angle Feedback (Closed Loop)',t:'Feedback rudder',
+ d:'Signal feedback sudut rudder aktual untuk closed loop control di autopilot.',
+ f:'Rudder Angle → Feedback Sensor → Autopilot → Correction',
+ l:['Feedback potentiometer','Synchro','Encoder','Signal cable']},
+{m:'ctrl',g:'A. Sensors / Instruments',c:'Steering-Elcont01-10',n:'Overload Pressure Switch',t:'Switch overload',
+ d:'Switch tekanan tinggi yang mendeteksi overload hydraulic (rudder mentok atau obstruksi).',
+ f:'High Pressure → Switch → Alarm / Reduce',
+ l:['Pressure switch','Setting','Trip output']},
+
+{m:'ctrl',g:'B. Controller',c:'Steering-Elcont01-11',n:'Steering Control Panel (Bridge)',t:'Panel kontrol bridge',
+ d:'Panel utama di bridge untuk mengontrol steering. Berisi mode selector (Auto/Manual/NFU), tiller, alarm.',
+ f:'Operator Input → Control Circuit → Steering Gear',
+ l:['Mode selector','Tiller / wheel','Non-follow-up lever','Alarm panel','Rudder indicator','Communication']},
+{m:'ctrl',g:'B. Controller',c:'Steering-Elcont01-12',n:'Steering Control Panel (ECR)',t:'Panel kontrol ECR',
+ d:'Panel repeater di ECR untuk monitoring & kontrol backup steering.',
+ f:'ECR Operator → Control Signal → Steering Gear',
+ l:['Monitoring display','Control selector','Alarm indicator','Communication']},
+{m:'ctrl',g:'B. Controller',c:'Steering-Elcont01-13',n:'Steering Control Panel (Steering Room)',t:'Panel lokal',
+ d:'Panel kontrol di steering gear room. Bisa mengontrol langsung pompa, valve, dan steering.',
+ f:'Local Operator → Local Control → Steering Gear',
+ l:['Start/Stop pump','Local/Auto selector','Emergency steering control','Rudder indicator','Alarm panel']},
+{m:'ctrl',g:'B. Controller',c:'Steering-Elcont01-14',n:'Autopilot Controller',t:'Autopilot',
+ d:'Controller yang mengendalikan steering secara otomatis sesuai heading yang di-set, menggunakan signal gyro.',
+ f:'Set Course + Gyro Heading → PID → Rudder Command → Steering',
+ l:['Heading dial','Course setter','PID algorithm','Rudder limit','Off-course alarm','Watch alarm interface']},
+{m:'ctrl',g:'B. Controller',c:'Steering-Elcont01-15',n:'Follow-Up (FU) Control',t:'Kontrol FU',
+ d:'Mode kontrol di mana sudut rudder mengikuti posisi tiller di bridge. Ruddder berhenti di posisi yang sama.',
+ f:'Tiller Position → Rudder Command → Rudder → Feedback → Match',
+ l:['Tiller','Servo system','Rudder feedback','Control amplifier']},
+{m:'ctrl',g:'B. Controller',c:'Steering-Elcont01-16',n:'Non-Follow-Up (NFU) Control',t:'Kontrol NFU',
+ d:'Mode kontrol di mana rudder bergerak terus selama lever ditahan, berhenti saat dilepas. Kontrol langsung.',
+ f:'Lever Press → Rudder Moves → Lever Release → Rudder Stops',
+ l:['NFU lever','Directional contact','Pump control','No feedback']},
+{m:'ctrl',g:'B. Controller',c:'Steering-Elcont01-17',n:'PLC Steering Control',t:'PLC steering',
+ d:'PLC yang mengontrol logic steering: mode selector, pump auto standby, safety interlock, alarm.',
+ f:'Input (Sensor, Command) → PLC Logic → Output (Pump, Valve, Alarm)',
+ l:['CPU','DI module','DO module','AI module','AO module','Communication']},
+{m:'ctrl',g:'B. Controller',c:'Steering-Elcont01-18',n:'PID Rudder Controller',t:'PID rudder',
+ d:'Loop PID yang mengatur sudut rudder dengan mengontrol servo valve. Digunakan di mode FU dan Auto.',
+ f:'Setpoint Rudder + Feedback Rudder → PID → Servo Valve Command',
+ l:['PID block','Setpoint','Feedback input','Output 4-20mA']},
+
+{m:'ctrl',g:'C. Actuator (Control Side)',c:'Steering-Elcont01-19',n:'Servo Valve Control Signal',t:'Signal servo valve',
+ d:'Signal 4-20mA dari control panel ke servo valve untuk mengatur aliran oli ke cylinder.',
+ f:'Control Command 4-20mA → Servo Valve → Oil Flow',
+ l:['Signal output','Shielded cable','Servo amplifier','Signal conditioner']},
+{m:'ctrl',g:'C. Actuator (Control Side)',c:'Steering-Elcont01-20',n:'Directional Valve Control',t:'Kontrol valve arah',
+ d:'Signal digital dari PLC ke solenoid directional valve untuk mengarahkan oli kiri/kanan.',
+ f:'PLC DO → Relay → Solenoid Directional Valve → Oil Direction',
+ l:['PLC DO output','Interposing relay','Solenoid coil','Feedback switch']},
+{m:'ctrl',g:'C. Actuator (Control Side)',c:'Steering-Elcont01-21',n:'Variable Pump Control',t:'Kontrol pompa variabel',
+ d:'Signal ke servo pompa variabel untuk mengatur displacement. Mengatur flow & arah steering.',
+ f:'Command → Servo → Swashplate Angle → Flow & Direction',
+ l:['Servo signal','Swashplate servo','Position feedback','Fail-safe']},
+
+{m:'ctrl',g:'D. Control Modes',c:'Steering-Elcont01-22',n:'Automatic Mode (Auto Pilot)',t:'Mode Auto',
+ d:'Mode otomatis di mana autopilot menjaga heading sesuai set course dengan mengoreksi rudder otomatis.',
+ f:'Gyro Heading + Set Course → PID → Rudder Correction → Ship on Course',
+ l:['Gyro input','Course setter','PID','Rudder command','Off-course alarm']},
+{m:'ctrl',g:'D. Control Modes',c:'Steering-Elcont01-23',n:'Manual Follow-Up Mode',t:'Mode Manual FU',
+ d:'Mode manual di mana tiller mengontrol sudut rudder. Rudder mengikuti posisi tiller.',
+ f:'Tiller → Rudder Angle Set → Steering → Feedback → Match',
+ l:['Tiller','Control amplifier','Feedback loop']},
+{m:'ctrl',g:'D. Control Modes',c:'Steering-Elcont01-24',n:'Manual Non-Follow-Up Mode',t:'Mode Manual NFU',
+ d:'Mode manual dengan lever NFU — rudder bergerak selama lever ditahan.',
+ f:'NFU Lever → Pump Command → Rudder Moves',
+ l:['NFU lever','Directional contact','Pump control']},
+{m:'ctrl',g:'D. Control Modes',c:'Steering-Elcont01-25',n:'Emergency Steering Mode',t:'Mode darurat',
+ d:'Mode kemudi darurat jika sistem utama gagal. Manual atau emergency pump.',
+ f:'Emergency Activation → Emergency Pump / Tiller → Manual Steering',
+ l:['Emergency selector','Emergency pump control','Emergency tiller alarm','Communication']},
+{m:'ctrl',g:'D. Control Modes',c:'Steering-Elcont01-26',n:'Remote Control (Bow)',t:'Kontrol remote',
+ d:'Kontrol steering dari wing station atau bridge wings untuk docking atau maneuver khusus.',
+ f:'Wing Station Control → Signal → Steering Gear',
+ l:['Remote station','Selector switch','Communication link','Priority lock']},
+
+{m:'ctrl',g:'E. Feedback Loop',c:'Steering-Elcont01-27',n:'Rudder Angle Feedback Loop',t:'Loop feedback rudder',
+ d:'Loop closed-loop yang membandingkan sudut rudder command dengan feedback aktual untuk koreksi.',
+ f:'Command + Feedback → Error → PID → Actuator → Rudder → Feedback',
+ l:['Feedback sensor','Error amplifier','PID','Servo valve','Rudder']},
+{m:'ctrl',g:'E. Feedback Loop',c:'Steering-Elcont01-28',n:'Heading Feedback Loop (Auto)',t:'Loop feedback heading',
+ d:'Loop pada mode Auto — membandingkan heading aktual dengan set course untuk mengoreksi rudder.',
+ f:'Set Course + Gyro Heading → Error → PID → Rudder Command',
+ l:['Gyro input','Course setter','PID','Rudder command','Counter rudder']},
+{m:'ctrl',g:'E. Feedback Loop',c:'Steering-Elcont01-29',n:'Servo Position Feedback',t:'Feedback servo',
+ d:'Signal feedback posisi servo valve untuk memastikan valve bergerak sesuai perintah.',
+ f:'Servo Position → LVDT → Feedback Signal → Controller',
+ l:['LVDT','Signal conditioner','Feedback loop']},
+{m:'ctrl',g:'E. Feedback Loop',c:'Steering-Elcont01-30',n:'Pump Displacement Feedback',t:'Feedback pompa',
+ d:'Signal feedback displacement pompa variabel untuk kontrol flow yang akurat.',
+ f:'Swashplate Position → Feedback → Controller',
+ l:['Position sensor','Feedback circuit']},
+
+{m:'ctrl',g:'F. Interlock & Safety',c:'Steering-Elcont01-31',n:'Steering Gear Interlock',t:'Interlock umum',
+ d:'Interlock yang memastikan urutan start benar: pump start dulu sebelum kontrol aktif.',
+ f:'Pump Running + Oil Pressure OK → Control Enabled',
+ l:['Interlock logic','Permissive relay','Feedback contacts']},
+{m:'ctrl',g:'F. Interlock & Safety',c:'Steering-Elcont01-32',n:'Low Oil Level Interlock',t:'Interlock level oli',
+ d:'Interlock yang mencegah start pump jika level oli hidrolik terlalu rendah.',
+ f:'Low Level → Switch → Interlock → Inhibit Pump Start',
+ l:['Level switch','Interlock relay','Alarm']},
+{m:'ctrl',g:'F. Interlock & Safety',c:'Steering-Elcont01-33',n:'Low Oil Pressure Trip',t:'Trip tekanan rendah',
+ d:'Trip yang menghentikan steering saat tekanan oli sistem turun drastis (indikasi kegagalan pompa).',
+ f:'Pressure Low → Switch → Trip → Pump Stop → Alarm',
+ l:['Pressure switch','Trip relay','Alarm output']},
+{m:'ctrl',g:'F. Interlock & Safety',c:'Steering-Elcont01-34',n:'High Oil Temperature Trip',t:'Trip suhu tinggi',
+ d:'Trip/ alarm jika suhu oli hidrolik melebihi setpoint (misal 70°C).',
+ f:'Oil Temp High → RTD → PLC → Alarm / Trip',
+ l:['RTD Pt100','Trip setting','Alarm','Cooling control']},
+{m:'ctrl',g:'F. Interlock & Safety',c:'Steering-Elcont01-35',n:'Overload Trip',t:'Trip overload',
+ d:'Trip jika hydraulic pressure melebihi setpoint (rudder mentok obstruksi). Reduce power atau stop.',
+ f:'Overload → Pressure Switch → Reduce / Trip',
+ l:['Pressure switch','Overload relay logic','Rudder jam alarm']},
+{m:'ctrl',g:'F. Interlock & Safety',c:'Steering-Elcont01-36',n:'Phase Failure Interlock',t:'Interlock fase',
+ d:'Interlock yang mencegah start motor pompa jika salah satu fase hilang atau tegangan tidak stabil.',
+ f:'Phase Fail → Relay → Inhibit Start → Alarm',
+ l:['Phase relay','Voltage sensing','Interlock contact']},
+{m:'ctrl',g:'F. Interlock & Safety',c:'Steering-Elcont01-37',n:'Emergency Steering Alarm',t:'Alarm darurat',
+ d:'Alarm di bridge & ECR saat mode emergency steering aktif (SOLAS requirement).',
+ f:'Emergency Mode → Alarm → Bridge + ECR Buzzer + Log',
+ l:['Alarm contact','Buzzer','Indicator lamp','VDR log']},
+
+{m:'ctrl',g:'G. Monitoring & Alarm',c:'Steering-Elcont01-38',n:'Steering AMS Alarm',t:'Alarm monitoring',
+ d:'Alarm Monitoring System yang menampilkan semua alarm steering: power fail, overload, low oil, high temp.',
+ f:'Sensor → PLC → AMS → Alarm Display + Log',
+ l:['Alarm display','Buzzer','Alarm log','Printer','Acknowledge']},
+{m:'ctrl',g:'G. Monitoring & Alarm',c:'Steering-Elcont01-39',n:'Steering Bridge Display',t:'Display bridge',
+ d:'Panel repeater di bridge: rudder angle indicator, mode, alarm, motor running.',
+ f:'Sensor → Signal → Bridge Display',
+ l:['Rudder indicator','Mode indicator','Alarm light','Motor running indicator']},
+{m:'ctrl',g:'G. Monitoring & Alarm',c:'Steering-Elcont01-40',n:'Course Recorder Interface',t:'Course recorder',
+ d:'Interface ke course recorder untuk merekam heading kapal secara kontinu untuk keperluan legal.',
+ f:'Heading Data → Course Recorder → Paper / Digital Record',
+ l:['Signal input','Recorder unit','Paper roll','Time base']},
+{m:'ctrl',g:'G. Monitoring & Alarm',c:'Steering-Elcont01-41',n:'VDR Interface (Voyage Data Recorder)',t:'Interface VDR',
+ d:'Interface ke VDR untuk merekam rudder angle, mode steering, heading, dan alarm (SOLAS mandatory).',
+ f:'Rudder + Mode + Heading + Alarm → VDR → Recording',
+ l:['VDR interface','Data bus','Timestamp','Storage unit']},
+{m:'ctrl',g:'G. Monitoring & Alarm',c:'Steering-Elcont01-42',n:'Data Logger & Trend',t:'Perekam data',
+ d:'Data logger merekam parameter steering (rudder, pressure, temp) untuk analisis trend & maintenance.',
+ f:'All Sensors → IAS → Historian → Trend + Report',
+ l:['Data logger','Historian','Trend display','Report generator']},
+
+{m:'ctrl',g:'H. Communication & Interface',c:'Steering-Elcont01-43',n:'Bridge-ECR Communication',t:'Komunikasi bridge-ECR',
+ d:'Saluran komunikasi khusus antara bridge dan ECR untuk koordinasi steering (intercom + telegraph).',
+ f:'Bridge Operator ↔ Intercom ↔ ECR Operator',
+ l:['Intercom handset','Ringing bell','Communication panel']},
+{m:'ctrl',g:'H. Communication & Interface',c:'Steering-Elcont01-44',n:'Gyro Repeater Interface',t:'Interface gyro repeater',
+ d:'Interface ke gyro repeater di steering room & bridge untuk referensi heading.',
+ f:'Gyro → Repeater → Heading Display',
+ l:['Synchro / step signal','Repeater motor','Dial display']},
+{m:'ctrl',g:'H. Communication & Interface',c:'Steering-Elcont01-45',n:'Communication Protocol',t:'Protokol komunikasi',
+ d:'Protokol komunikasi antara steering control unit, autopilot, gyro, VDR, dan IAS.',
+ f:'Control Unit ↔ NMEA / Modbus ↔ Autopilot + Gyro + VDR',
+ l:['NMEA 0183 / 2000','Modbus RTU / TCP','Analog synchro','Ethernet']},
+];
+
+/* RENDER */
+const MOD = {
+  mech: {label:'Steering-Mech01 — MECHANICAL STEERING GEAR', desc:'Sisi mekanik: rudder, rudder stock, hydraulic power unit, cylinder, tiller, emergency steering.', cls:'m'},
+  elec: {label:'Steering-Elect01 — ELECTRICAL SYSTEM STEERING', desc:'Sisi elektrikal: MSB & emergency feeder, steering MCC, motor pompa hidrolik, starter, proteksi.', cls:'e'},
+  ctrl: {label:'Steering-Elcont01 — CONTROL / AUTOMATION STEERING', desc:'Sisi kontrol: autopilot, FU/NFU, gyro interface, rudder feedback, PID, alarm, interlock.', cls:'c'}
+};
+
+function render(){
+  const c = document.getElementById('content');
+  let html = '';
+  ['mech','elec','ctrl'].forEach(m=>{
+    const items = DATA.filter(x=>x.m===m);
+    const groups = [...new Set(items.map(x=>x.g))];
+    const mod = MOD[m];
+    html += `<section id="${m}" class="${mod.cls}">
+      <h2><span class="bar"></span>${mod.label}</h2>
+      <p class="desc">${mod.desc} — <b>${items.length} komponen</b></p>`;
+    groups.forEach(g=>{
+      const gi = items.filter(x=>x.g===g);
+      html += `<div class="sub"><h4>${g}</h4><div class="grid">`;
+      gi.forEach(it=>{
+        html += `<div class="item ${mod.cls}" data-code="${it.c}" data-m="${m}">
+          <div class="code">${it.c}</div>
+          <div class="name">${it.n}</div>
+          <div class="tag">${it.t}</div>
+        </div>`;
+      });
+      html += `</div></div>`;
+    });
+    html += `</section>`;
+  });
+  c.innerHTML = html;
+  c.querySelectorAll('.item').forEach(el=>{el.onclick = ()=>openModal(el.dataset.code);});
+  document.getElementById('wm1').textContent = DATA.filter(x=>x.m==='mech').length + ' komponen';
+  document.getElementById('wm2').textContent = DATA.filter(x=>x.m==='elec').length + ' komponen';
+  document.getElementById('wm3').textContent = DATA.filter(x=>x.m==='ctrl').length + ' komponen';
+}
+
+function closeWelcome(){
+  document.getElementById('welcomeOverlay').classList.add('hidden');
+  setTimeout(()=>{document.getElementById('welcomeOverlay').style.display='none';},350);
+}
+function goToModule(mod){
+  closeWelcome();
+  setTimeout(()=>{
+    document.getElementById('content').scrollIntoView({behavior:'smooth',block:'start'});
+    document.querySelector(`.fbtn[data-filter="${mod}"]`)?.click();
+  },250);
+}
+document.getElementById('welcomeOverlay').addEventListener('click', e=>{if(e.target.id==='welcomeOverlay')closeWelcome();});
+
+function openModal(code){
+  const it = DATA.find(x=>x.c===code);
+  if(!it){alert('Data tidak ditemukan: '+code);return;}
+  const mod = MOD[it.m];
+  const q = encodeURIComponent(it.n + ' ship steering gear marine ' + it.c);
+  const qs = encodeURIComponent(it.n + ' ship steering');
+  document.getElementById('mc').innerHTML = `
+    <button class="close" onclick="closeModal()">✕</button>
+    <div class="mcode">${it.c}</div>
+    <h3>${it.n}</h3>
+    <span class="badge ${mod.cls}">${mod.label}</span>
+    <p>${it.d}</p>
+    <div class="flow">${it.f}</div>
+    <span class="lbl"><b>Komponen / Bagian terkait:</b></span>
+    <ul>${it.l.map(x=>'<li>'+x+'</li>').join('')}</ul>
+    <span class="lbl">Cari lebih dalam di sumber eksternal:</span>
+    <div class="links">
+      <a class="g" target="_blank" rel="noopener" href="https://www.google.com/search?q=${q}">🔎 Google</a>
+      <a class="y" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${q}">▶ YouTube</a>
+      <a class="w" target="_blank" rel="noopener" href="https://en.wikipedia.org/w/index.php?search=${qs}">📖 Wikipedia</a>
+      <a class="p" target="_blank" rel="noopener" href="https://www.pinterest.com/search/pins/?q=${qs}">📌 Pinterest</a>
+      <a class="s" target="_blank" rel="noopener" href="https://www.google.com/search?q=SOLAS+${qs}">⛑ SOLAS</a>
+      <a class="mr" target="_blank" rel="noopener" href="https://www.google.com/search?q=MARPOL+${qs}">🌊 MARPOL</a>
+      <a class="i" target="_blank" rel="noopener" href="https://www.imo.org/en/search/results?q=${qs}">🏛 IMO</a>
+      <a class="cl" target="_blank" rel="noopener" href="https://www.google.com/search?q=class+${qs}">📋 Class</a>
+    </div>`;
+  document.getElementById('mo').classList.add('active');
+}
+function closeModal(){document.getElementById('mo').classList.remove('active');}
+document.getElementById('mo').addEventListener('click', e=>{if(e.target.id==='mo')closeModal();});
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){
+    if(document.getElementById('mo').classList.contains('active'))closeModal();
+    else if(!document.getElementById('welcomeOverlay').classList.contains('hidden'))closeWelcome();
+  }
+});
+
+document.querySelectorAll('nav .fbtn[data-filter]').forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll('nav .fbtn[data-filter]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    document.querySelectorAll('section').forEach(sec=>{
+      sec.style.display = (f==='all' || sec.id===f) ? '' : 'none';
+    });
+  };
+});
+
+document.getElementById('q').addEventListener('input', function(){
+  const q = this.value.toLowerCase().trim();
+  document.querySelectorAll('section').forEach(sec=>{
+    let anyV = false;
+    sec.querySelectorAll('.sub').forEach(sub=>{
+      let sv = false;
+      sub.querySelectorAll('.item').forEach(it=>{
+        const txt = (it.dataset.code+' '+it.querySelector('.name').textContent+' '+it.querySelector('.tag').textContent).toLowerCase();
+        const ok = !q || txt.includes(q);
+        it.style.display = ok ? '' : 'none';
+        if(ok){sv=true;anyV=true;}
+      });
+      sub.style.display = sv ? '' : 'none';
+    });
+    sec.style.opacity = (anyV || !q) ? '1' : '.3';
+  });
+});
+
+render();
+console.log('✅ Steering Gear Learning Suite loaded —', DATA.length, 'komponen');
+</script>
+</body>
+</html>
